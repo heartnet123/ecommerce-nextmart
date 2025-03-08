@@ -1,55 +1,22 @@
+// frontend/app/cart/page.tsx
 "use client";
 
-import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { Minus, Plus, X } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-
-const initialCartItems = [
-  {
-    id: 1,
-    name: "Wireless Earbuds Pro",
-    price: 199.99,
-    image:
-      "https://images.unsplash.com/photo-1590658268037-6bf12165a8df?auto=format&fit=crop&q=80&w=500",
-    quantity: 1,
-  },
-  {
-    id: 2,
-    name: "Smart Watch Series X",
-    price: 299.99,
-    image:
-      "https://images.unsplash.com/photo-1579586337278-3befd40fd17a?auto=format&fit=crop&q=80&w=500",
-    quantity: 1,
-  },
-];
+import { useCartStore } from "@/app/stores/authStore";
 
 export default function CartPage() {
-  const [cartItems, setCartItems] = useState(initialCartItems);
-
-  const updateQuantity = (id: number, change: number) => {
-    setCartItems((items) =>
-      items.map((item) =>
-        item.id === id
-          ? { ...item, quantity: Math.max(1, item.quantity + change) }
-          : item,
-      ),
-    );
-  };
-
-  const removeItem = (id: number) => {
-    setCartItems((items) => items.filter((item) => item.id !== id));
-  };
+  const { cartItems, updateQuantity, removeItem } = useCartStore();
 
   const subtotal = cartItems.reduce(
     (sum, item) => sum + item.price * item.quantity,
-    0,
+    0
   );
-  const shipping = 10;
-  const total = subtotal + shipping;
+  const total = subtotal
 
   return (
     <div>
@@ -86,7 +53,7 @@ export default function CartPage() {
                         <div className="ml-4 flex-1">
                           <div className="flex justify-between">
                             <Link
-                              href={`/product/${item.id}`}
+                              href={`/products/${item.id}`}
                               className="font-medium hover:text-primary"
                             >
                               {item.name}
@@ -99,7 +66,7 @@ export default function CartPage() {
                             </button>
                           </div>
                           <p className="text-muted-foreground mt-1">
-                            ${item.price}
+                            {item.price} ฿
                           </p>
                           <div className="flex items-center mt-2">
                             <button
@@ -132,19 +99,17 @@ export default function CartPage() {
                 <div className="space-y-4">
                   <div className="flex justify-between">
                     <span className="text-muted-foreground">Subtotal</span>
-                    <span>${subtotal.toFixed(2)}</span>
+                    <span>{subtotal} ฿</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-muted-foreground">Shipping</span>
-                    <span>${shipping.toFixed(2)}</span>
                   </div>
                   <Separator />
                   <div className="flex justify-between font-semibold">
                     <span>Total</span>
-                    <span>${total.toFixed(2)}</span>
+                    <span>{total} ฿</span>
                   </div>
-                  <Button className="w-full" size="lg">
-                    Proceed to Checkout
+                  <Button asChild className="w-full" size="lg">
+                    <Link href="/checkout">Proceed to Checkout</Link>
                   </Button>
                 </div>
               </CardContent>

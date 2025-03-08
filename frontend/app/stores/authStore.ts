@@ -1,29 +1,54 @@
-import { create } from 'zustand';
-import { checkIsAdmin, getAuthToken } from '@/app/lib/auth';
+"use client";
 
-interface AuthStore {
-  isAuthenticated: boolean;
-  isAdmin: boolean;
-  setIsAuthenticated: (value: boolean) => void;
-  setIsAdmin: (value: boolean) => void;
-  checkAuth: () => Promise<void>;
+import { create } from "zustand";
+import { persist } from "zustand/middleware";
+
+interface CartItem {
+  id: string;
+  name: string;
+  price: number;
+  image: string;
+  quantity: number;
 }
 
-export const useAuthStore = create<AuthStore>((set) => ({
-  isAuthenticated: false,
-  isAdmin: false,
-  setIsAuthenticated: (value) => set({ isAuthenticated: value }),
-  setIsAdmin: (value) => set({ isAdmin: value }),
-  checkAuth: async () => {
-    const token = getAuthToken();
-    const isAuthenticated = !!token;
-    set({ isAuthenticated });
-    
-    if (isAuthenticated) {
-      const isAdmin = await checkIsAdmin();
-      set({ isAdmin });
-    } else {
-      set({ isAdmin: false });
+interface CartStore {
+  cartItems: CartItem[];
+  addToCart: (item: CartItem) => void;
+  updateQuantity: (id: string, quantity: number) => void;
+  removeItem: (id: string) => void;
+  clearCart: () => void;
+}
+
+export const useCartStore = create<CartStore>()(
+  persist(
+    (set) => ({
+      cartItems: [],
+      addToCart: (item) =>
+        set((state) => {
+          const existingItem = state.cartItems.find((i) => i.id === item.id);
+          if (existingItem) {
+            return {
+              cartItems: state.cartItems.map((i) =>
+                i.id === item.id ? { ...i, quantity: i.quantity + item.quantity } : i
+              ),
+            };
+          }
+          return { cartItems: [...state.cartItems, item] };
+        }),
+      updateQuantity: (id, quantity) =>
+        set((state) => ({
+          cartItems: state.cartItems.map((item) =>
+            item.id === id ? { ...item, quantity: Math.max(1, quantity) } : item
+          ),
+        })),
+      removeItem: (id) =>
+        set((state) => ({
+          cartItems: state.cartItems.filter((item) => item.id !== id),
+        })),
+      clearCart: () => set({ cartItems: [] }),
+    }),
+    {
+      name: "cart-storage", // เก็บใน localStorage เพื่อ persistence
     }
-  },
-}));
+  )
+);

@@ -24,7 +24,7 @@ export default function RootLayout({
       <head />
       <body className={inter.className}>
         <Providers>
-          <Header />
+          <Header isAuthenticated={false} isAdmin={false} />
           <main className="min-h-screen bg-background">{children}</main>
         </Providers>
       </body>

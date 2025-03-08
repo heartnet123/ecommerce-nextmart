@@ -1,94 +1,117 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useState, useEffect } from "react";
+import { Button } from "@/components/ui/button";
+import toast from "react-hot-toast";
 import Link from "next/link";
 import axios from "axios";
-import { Product } from "@/app/types/index";
-import { useAuthStore } from "@/app/stores/authStore";
+import { Product } from "@/app/types";
+import Image from "next/image";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+
 export default function AdminProductsPage() {
-  const router = useRouter();
-  const { isAuthenticated, isAdmin, checkAuth } = useAuthStore();
   const [products, setProducts] = useState<Product[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const [loading, setLoading] = useState(true);
+
+  const fetchProducts = async () => {
+    try {
+      const response = await axios.get(`http://localhost:8000/api/products/`, {
+        headers: { Authorization: `Bearer ${document.cookie.split("accessToken=")[1]?.split(";")[0]}` },
+      });
+      setProducts(response.data);
+    } catch (error) {
+      toast.error("Failed to load products");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleDelete = async (id: number) => {
+    if (confirm("Are you sure you want to delete this product?")) {
+      try {
+        await axios.delete(`http://localhost:8000/api/products/admin/${id}/`, {
+          headers: { Authorization: `Bearer ${document.cookie.split("accessToken=")[1]?.split(";")[0]}` },
+        });
+        setProducts(products.filter((p) => Number(p.id) !== id));
+          toast.success("Product deleted successfully");
+      } catch (error) {
+        toast.error("Failed to delete product");
+        console.error(error);
+      }
+    }
+  };
 
   useEffect(() => {
-    const fetchProducts = async () => {
-      try {
-        // Check authentication and admin status using the store
-        await checkAuth();
-
-        if (!isAuthenticated || !isAdmin) {
-          router.replace("/unauthorized");
-          return;
-        }
-
-        // Fetch products using access token from localStorage
-        const token = localStorage.getItem("accessToken");
-        const response = await axios.get(
-          "http://127.0.0.1:8000/api/products/",
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-              "Content-Type": "application/json",
-            },
-          },
-        );
-
-        setProducts(response.data);
-      } catch (error) {
-        console.error("Products fetch error:", error);
-        if (axios.isAxiosError(error) && error.response?.status === 401) {
-          router.replace("/unauthorized");
-        }
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
     fetchProducts();
-  }, [router, isAuthenticated, isAdmin, checkAuth]);
-
-  if (isLoading) {
-    return (
-      <div className="flex justify-center items-center min-h-screen">
-        <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-blue-500"></div>
-      </div>
-    );
-  }
+  }, []);
 
   return (
-    <div className="container mx-auto p-4">
-      <h1 className="text-2xl font-bold mb-4">Admin Products Management</h1>
-      <div className="overflow-x-auto">
-        <table className="min-w-full bg-white border border-gray-300">
-          <thead>
-            <tr>
-              <th className="px-6 py-3 border-b">ID</th>
-              <th className="px-6 py-3 border-b">Name</th>
-              <th className="px-6 py-3 border-b">Price</th>
-              <th className="px-6 py-3 border-b">Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {products.map((product) => (
-              <tr key={product.id}>
-                <td className="px-6 py-4 border-b">{product.id}</td>
-                <td className="px-6 py-4 border-b">{product.name}</td>
-                <td className="px-6 py-4 border-b">${product.price}</td>
-                <td className="px-6 py-4 border-b">
-                  <Link
-                    href={`/admin/products/${product.id}`}
-                    className="text-blue-600 hover:text-blue-800 mr-4"
-                  >
-                    Edit
-                  </Link>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+    <div className="container mx-auto px-4 py-8">
+      <h1 className="text-3xl font-bold mb-6">Admin Products Dashboard</h1>
+      <Link href="/admin/products/create">
+        <Button className="mb-4">Add New Product</Button>
+      </Link>
+      
+      {loading ? (
+        <p>Loading...</p>
+      ) : (
+        <div className="overflow-x-auto">
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead className="w-[100px]">Image</TableHead>
+                <TableHead>Name</TableHead>
+                <TableHead>Price</TableHead>
+                <TableHead>Stock</TableHead>
+                <TableHead>Category</TableHead>
+                <TableHead className="text-right">Actions</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {products.map((product) => (
+                <TableRow key={product.id}>
+                  <TableCell>
+                    <div className="relative h-16 w-16">
+                      <Image
+                        src={`http://127.0.0.1:8000/${product.image}/`}
+                        alt={product.name}
+                        layout="fill"
+                        objectFit="cover"
+                        className="rounded-md"
+                      />
+                    </div>
+                  </TableCell>
+                  <TableCell className="font-medium">{product.name}</TableCell>
+                  <TableCell>${product.price}</TableCell>
+                  <TableCell>{product.stock}</TableCell>
+                  <TableCell>{product.category}</TableCell>
+                  <TableCell className="text-right">
+                    <div className="flex justify-end gap-2">
+                      <Link href={`/admin/products/edit/${product.id}`}>
+                        <Button variant="outline" size="sm">Edit</Button>
+                      </Link>
+                      <Button 
+                        variant="destructive" 
+                        size="sm" 
+                        onClick={() => handleDelete(Number(product.id))}
+                      >
+                        Delete
+                      </Button>
+                    </div>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </div>
+      )}
     </div>
   );
 }

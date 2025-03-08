@@ -1,8 +1,8 @@
 "use client";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { useAuthStore } from "@/app/stores/authStore";
 import { login } from "@/app/lib/auth";
+import Link from 'next/link';
 
 const LoginPage = () => {
   const [credentials, setCredentials] = useState({
@@ -10,21 +10,29 @@ const LoginPage = () => {
     password: "",
   });
   const [error, setError] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
 
-  const handleLogin = async () => {
+  const handleLogin = async (e: React.FormEvent) => {
+    e.preventDefault(); 
+    
+    if (!credentials.username || !credentials.password) {
+      setError("Please enter both username and password");
+      return;
+    }
+    
+    setIsLoading(true);
+    setError("");
+    
     try {
       await login(credentials.username, credentials.password);
-
-      // Update auth state in Zustand store
-      const { setIsAuthenticated, checkAuth } = useAuthStore.getState();
-      await checkAuth(); // This will also check if user is admin
-      setIsAuthenticated(true);
-
-      router.push("/"); // Redirect to home page after login
+      router.push("/");
+      router.refresh();
     } catch (error) {
       console.error("Login failed:", error);
       setError("Wrong username or password");
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -35,10 +43,14 @@ const LoginPage = () => {
           <h1 className="text-2xl font-semibold text-center text-foreground">
             Login
           </h1>
+          
           {error && (
-            <p className="text-destructive text-sm text-center">{error}</p>
+            <div className="bg-destructive/10 text-destructive text-sm p-3 rounded-md text-center">
+              {error}
+            </div>
           )}
-          <div className="space-y-4">
+          
+          <form onSubmit={handleLogin} className="space-y-4">
             <div className="space-y-2">
               <label
                 htmlFor="username"
@@ -57,6 +69,7 @@ const LoginPage = () => {
                 required
               />
             </div>
+            
             <div className="space-y-2">
               <label
                 htmlFor="password"
@@ -75,13 +88,25 @@ const LoginPage = () => {
                 required
               />
             </div>
+            
             <button
-              onClick={handleLogin}
-              className="w-full bg-primary text-primary-foreground py-2 px-4 rounded-md hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 transition-colors"
+              type="submit"
+              disabled={isLoading}
+              className="w-full bg-primary text-primary-foreground py-2 px-4 rounded-md hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 transition-colors disabled:opacity-70 disabled:cursor-not-allowed"
             >
-              Login
+              {isLoading ? "Logging in..." : "Login"}
             </button>
-          </div>
+            
+            <p className="mt-2 text-center text-sm text-gray-600">
+              Not have account?{" "}
+              <Link
+                href="/register"
+                className="font-medium text-primary hover:text-primary/90"
+              >
+                Sign up
+              </Link>
+            </p>
+          </form>
         </div>
       </div>
     </div>
