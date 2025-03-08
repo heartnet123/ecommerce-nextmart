@@ -7,7 +7,7 @@ import { Separator } from "@/components/ui/separator";
 import { Minus, Plus, X } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { useCartStore } from "@/app/stores/authStore";
+import { useCartStore } from "@/app/stores/useCartStore";
 
 export default function CartPage() {
   const { cartItems, updateQuantity, removeItem } = useCartStore();

@@ -74,7 +74,7 @@ export default async function Header({ isAuthenticated, isAdmin }: HeaderProps) 
                   </DropdownMenuItem>
                 )}
                 <DropdownMenuItem>
-                  <LogoutButton /> {/* ใช้ LogoutButton แทน Link */}
+{/* ใช้ LogoutButton แทน Link */}
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>

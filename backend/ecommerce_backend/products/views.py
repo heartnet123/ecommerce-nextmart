@@ -81,9 +81,9 @@ class ProductSearchAPIView(APIView):
                 Q(description__icontains=query)
             )
         
-        # กรองตามหมวดหมู่
+        # กรองตามหมวดหมู่ (ใช้ choices ของ CharField)
         if category:
-            queryset = queryset.filter(category__name__icontains=category)
+            queryset = queryset.filter(category=category)
         
         # กรองตามราคาต่ำสุด
         if min_price:

@@ -6,6 +6,7 @@ import { Inter } from "next/font/google";
 import Navbar from "@/app/components/Navbar";
 import Header from "./components/layout/Header";
 import Providers from "@/components/ui/Providers";
+import { Toaster } from "react-hot-toast";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -27,6 +28,7 @@ export default function RootLayout({
           <Header isAuthenticated={false} isAdmin={false} />
           <main className="min-h-screen bg-background">{children}</main>
         </Providers>
+        <Toaster position="bottom-center" />
       </body>
     </html>
   );

@@ -107,7 +107,7 @@ export const config = {
     matcher: [
         '/profile/:path*',
         '/orders/:path*',
-        '/admin/:path*', // Include all admin subroutes
+        '/admin/:path*', 
         '/login',
         '/register',
     ],

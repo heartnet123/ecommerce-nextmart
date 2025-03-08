@@ -1,3 +1,4 @@
+// frontend/app/components/products/ProductCard.tsx
 "use client";
 
 import Image from "next/image";
@@ -5,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Product } from "@/app/types";
+import { useCartStore } from "@/app/stores/useCartStore";
 
 interface ProductCardProps {
   product: Product;
@@ -12,12 +14,23 @@ interface ProductCardProps {
 
 export default function ProductCard({ product }: ProductCardProps) {
   const router = useRouter();
+  const { addToCart } = useCartStore();
 
-  // สร้าง URL สำหรับรูป ถ้าไม่มีรูป ก็ใส่ Placeholder
   const imageUrl = product.image
     ? `http://127.0.0.1:8000/media/products/${product.image}`
     : "/images/placeholder.png";
-  // หรือคุณจะใส่เส้นทาง placeholder ที่ต้องการ
+
+  const handleAddToCart = () => {
+    if (product.stock > 0) {
+      addToCart({
+        id: product.id,
+        name: product.name,
+        price: product.price,
+        image: imageUrl, // Use full URL for consistency
+        quantity: 1,
+      });
+    }
+  };
 
   return (
     <Card className="overflow-hidden">
@@ -45,12 +58,20 @@ export default function ProductCard({ product }: ProductCardProps) {
           </span>
         </div>
       </CardContent>
-      <CardFooter className="p-4">
+      <CardFooter className="p-4 flex gap-2">
         <Button
-          className="w-full"
+          className="flex-1"
           onClick={() => router.push(`/products/${product.id}`)}
         >
           View Details
+        </Button>
+        <Button
+          className="flex-1"
+          variant={product.stock > 0 ? "default" : "secondary"}
+          disabled={product.stock === 0}
+          onClick={handleAddToCart}
+        >
+          Add to Cart
         </Button>
       </CardFooter>
     </Card>

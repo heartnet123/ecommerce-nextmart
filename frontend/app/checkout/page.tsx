@@ -6,15 +6,15 @@ import { Button } from "@/components/ui/button";
 import toast from "react-hot-toast";
 import axios from "axios";
 import { useRouter } from "next/navigation";
-import { useCartStore } from "@/app/stores/authStore";
+import { useCartStore } from "@/app/stores/useCartStore";
 
 export default function CheckoutPage() {
   const { cartItems, clearCart } = useCartStore();
   const [loading, setLoading] = useState(false);
-  const [userId, setUserId] = useState<number | null>(null);
+  const [userId, setUserId] = useState<number | null>(null); // เก็บ user ID
   const router = useRouter();
 
-  // Fetch user profile when page loads
+  // ดึง user ID จาก API เมื่อหน้าโหลด
   useEffect(() => {
     const fetchUserProfile = async () => {
       try {
@@ -30,11 +30,12 @@ export default function CheckoutPage() {
             Authorization: `Bearer ${token}`,
           },
         });
-        setUserId(response.data.id);
+        setUserId(response.data.id); // เก็บ ID จาก response
+        console.log("User profile:", response.data);
       } catch (error: any) {
         toast.error("Failed to load user profile");
         console.error("Profile fetch error:", error.response?.data || error.message);
-        router.push("/login");
+        router.push("/login"); // ถ้า token หมดอายุหรือ error ให้ไป login
       }
     };
 
@@ -52,15 +53,14 @@ export default function CheckoutPage() {
     }
 
     setLoading(true);
-    
-    // Fixed JSON format according to requirements
     const orderData = {
-      cartItems: cartItems.map((item) => ({
-        product: parseInt(item.id),
+      user: userId, // ใช้ user ID ที่ดึงมา
+      cartcartItems: cartItems.map((item) => ({
+        product: item.id,
         quantity: item.quantity,
       })),
       total_price: cartItems.reduce((sum, item) => sum + item.price * item.quantity, 0),
-      status: "pending",
+      status: "completed",
     };
 
     console.log("Sending order data:", orderData);
@@ -74,7 +74,7 @@ export default function CheckoutPage() {
         orderData,
         {
           headers: {
-            Authorization: `Bearer ${token}`,   
+            Authorization: `Bearer ${token}`,
             "Content-Type": "application/json",
           },
         }
@@ -82,99 +82,40 @@ export default function CheckoutPage() {
       toast.success("Order placed successfully");
       console.log("Response:", response.data);
       clearCart();
-      router.push("/profile");
+      router.push("/orders");
     } catch (error: any) {
       toast.error("Failed to place order");
-      console.error("Order submission error:", error.response?.data || error.message);
+      console.error("Error details:", {
+        message: error.message,
+        response: error.response?.data,
+        status: error.response?.status,
+      });
     } finally {
       setLoading(false);
     }
   };
 
   if (userId === null && !loading) {
-    return (
-      <div className="container mx-auto px-4 py-8">
-        <div className="flex justify-center items-center h-32">
-          <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-primary"></div>
-          <p className="ml-3">Loading user profile...</p>
-        </div>
-      </div>
-    );
+    return <p>Loading user profile...</p>; // รอจนกว่าจะดึง user ID
   }
 
   return (
     <div className="container mx-auto px-4 py-8">
       <h1 className="text-3xl font-bold mb-6">Checkout</h1>
-      
-      {cartItems.length > 0 ? (
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          <div className="md:col-span-2 bg-background p-6 rounded-lg shadow-sm">
-            <h2 className="text-xl font-semibold mb-4">Order Summary</h2>
-            
-            <div className="space-y-4">
-              {cartItems.map((item) => (
-                <div 
-                  key={item.id} 
-                  className="flex items-center justify-between pb-4 border-b"
-                >
-                  <div className="flex items-center">
-                    <div className="w-16 h-16 bg-background rounded-md overflow-hidden relative mr-4">
-                      {item.image && (
-                        <img 
-                          src={item.image} 
-                          alt={item.name}
-                          className="w-full h-full object-cover"
-                        />
-                      )}
-                    </div>
-                    <div>
-                      <p className="font-medium">{item.name}</p>
-                      <p className="text-sm text-gray-500">Quantity: {item.quantity}</p>
-                    </div>
-                  </div>
-                  <span className="font-medium">${(item.price * item.quantity).toFixed(2)}</span>
-                </div>
-              ))}
-            </div>
+      <div className="space-y-4">
+        {cartItems.map((item) => (
+          <div key={item.id} className="flex justify-between">
+            <span>{item.name} (x{item.quantity})</span>
+            <span>${(item.price * item.quantity).toFixed(2)}</span>
           </div>
-          
-          <div className="bg-background p-6 rounded-lg shadow-sm h-fit">
-            <h2 className="text-xl font-semibold mb-4">Order Total</h2>
-            <div className="space-y-2">
-              <div className="flex justify-between">
-                <span>Subtotal:</span>
-                <span>${cartItems.reduce((sum, item) => sum + item.price * item.quantity, 0).toFixed(2)}</span>
-              </div>
-              <div className="flex justify-between">
-                <span>Shipping:</span>
-                <span>Free</span>
-              </div>
-              <div className="border-t my-4"></div>
-              <div className="flex justify-between font-bold">
-                <span>Total:</span>
-                <span>${cartItems.reduce((sum, item) => sum + item.price * item.quantity, 0).toFixed(2)}</span>
-              </div>
-            </div>
-            
-            <Button 
-              onClick={handleConfirmOrder} 
-              disabled={loading}
-              className="w-full mt-6"
-              size="lg"
-            >
-              {loading ? "Processing..." : "Place Order"}
-            </Button>
-          </div>
+        ))}
+        <div className="border-t pt-2">
+          <strong>Total: ${cartItems.reduce((sum, item) => sum + item.price * item.quantity, 0).toFixed(2)}</strong>
         </div>
-      ) : (
-        <div className="text-center py-12">
-          <h2 className="text-xl font-medium mb-4">Your cart is empty</h2>
-          <p className="mb-6 text-gray-500">Add some products to your cart to checkout</p>
-          <Button onClick={() => router.push('/products')}>
-            Browse Products
-          </Button>
-        </div>
-      )}
+        <Button onClick={handleConfirmOrder} disabled={loading}>
+          {loading ? "Processing..." : "Confirm Order"}
+        </Button>
+      </div>
     </div>
   );
 }
