@@ -1,0 +1,74 @@
+# Django
+.env
+*.pyc
+__pycache__/
+*.sqlite3
+*.log
+/media/
+/staticfiles/
+/db.sqlite3
+.DS_Store
+
+# Virtual Environment
+venv/
+env/
+.venv/
+ENV/
+
+# Node.js / Next.js
+node_modules/
+.next/
+out/
+.cache/
+dist/
+.turbo/
+
+# Environment Variables
+.env.local
+.env.development
+.env.production
+.env.test
+
+# IDE Specific
+.vscode/
+.idea/
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Dependency Directories
+**/node_modules/
+**/bower_components/
+
+# Build Files
+/build/
+/static/
+
+# Debug Files
+*.swp
+*.swo
+
+# macOS
+.DS_Store
+
+# Testing
+/coverage/
+
+# Production
+.cache/
+.next/
+out/
+
+# Misc
+*.bak
+*.tmp
+*.pid
+*.seed
+*.pid.lock
+*.sock
+*.tgz
+*.yarn-integrity
