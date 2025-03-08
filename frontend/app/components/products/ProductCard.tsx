@@ -5,8 +5,9 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
-import { Product } from "@/app/types";
+import { Product } from "@/app/types/index";
 import { useCartStore } from "@/app/stores/useCartStore";
+import toast from "react-hot-toast";
 
 interface ProductCardProps {
   product: Product;
@@ -17,20 +18,21 @@ export default function ProductCard({ product }: ProductCardProps) {
   const { addToCart } = useCartStore();
 
   const imageUrl = product.image
-    ? `http://127.0.0.1:8000/media/products/${product.image}`
+ ? `http://127.0.0.1:8000/media/products/${product.image}`
     : "/images/placeholder.png";
 
-  const handleAddToCart = () => {
-    if (product.stock > 0) {
-      addToCart({
-        id: product.id,
-        name: product.name,
-        price: product.price,
-        image: imageUrl, // Use full URL for consistency
-        quantity: 1,
-      });
-    }
-  };
+    const handleAddToCart = () => {
+      if (product.stock > 0) {
+        addToCart({
+          id: String(product.id),
+          name: product.name,
+          price: product.price,
+          image: product.image ? imageUrl : "/images/placeholder.png",
+          quantity: 1,
+        });
+        toast.success("Add to cart");
+      }
+    };
 
   return (
     <Card className="overflow-hidden">
@@ -48,7 +50,7 @@ export default function ProductCard({ product }: ProductCardProps) {
           {product.description}
         </p>
         <div className="mt-2 flex items-center justify-between">
-          <span className="text-lg font-bold">${product.price}</span>
+          <span className="text-lg font-bold">{product.price} ฿</span>
           <span
             className={`text-sm ${
               product.stock > 0 ? "text-green-600" : "text-red-600"

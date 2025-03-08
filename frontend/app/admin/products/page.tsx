@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import toast from "react-hot-toast";
 import Link from "next/link";
 import axios from "axios";
-import { Product } from "@/app/types";
+import { Product } from "@/app/types/index";
 import Image from "next/image";
 import {
   Table,
@@ -80,7 +80,7 @@ export default function AdminProductsPage() {
                   <TableCell>
                     <div className="relative h-16 w-16">
                       <Image
-                        src={`http://127.0.0.1:8000/${product.image}/`}
+                        src={`http://127.0.0.1:8000/media/products/${product.image}`}
                         alt={product.name}
                         layout="fill"
                         objectFit="cover"

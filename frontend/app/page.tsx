@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { Product } from "./types";
+import { Product } from "./types/index";
 import ProductCard from "./components/products/ProductCard";
 import { Button } from "@/components/ui/button";
 
@@ -57,18 +57,18 @@ export default function Home() {
 
   return (
     <div className="flex flex-col min-h-screen">
-      <main className="flex-grow bg-background">
-        {/* Hero Section */}
-        <section className="bg-gradient-to-r from-primary/10 to-primary/5 py-20">
-          <div className="container mx-auto px-4 text-center">
-            <h1 className="text-4xl md:text-6xl font-bold mb-6">
-              Your One-Stop Gaming Shop
-            </h1>
-            <p className="text-xl text-muted-foreground mb-8">
-              Physical gaming gear and digital keys, all in one place
-            </p>
-          </div>
-        </section>
+    <main className="flex-grow bg-background">
+      {/* Hero Section */}
+      <section className="bg-gradient-to-r from-primary/10 to-primary/5 py-20">
+        <div className="container mx-auto px-4 text-center">
+          <h1 className="text-4xl md:text-6xl font-bold mb-6">
+            Your One-Stop Gaming Shop
+          </h1>
+          <p className="text-xl text-muted-foreground mb-8">
+            Physical gaming gear and digital keys, all in one place
+          </p>
+        </div>
+      </section>
 
         {/* Featured Products */}
         <section className="container mx-auto px-4 py-16">

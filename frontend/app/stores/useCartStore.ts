@@ -1,3 +1,4 @@
+// app/stores/cartStore.ts
 "use client";
 
 import { create } from "zustand";
@@ -48,7 +49,7 @@ export const useCartStore = create<CartStore>()(
       clearCart: () => set({ cartItems: [] }),
     }),
     {
-      name: "cart-storage", // เก็บใน localStorage เพื่อ persistence
+      name: "cart-storage", // เก็บใน localStorage 
     }
   )
 );
