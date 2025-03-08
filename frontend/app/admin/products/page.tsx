@@ -80,7 +80,7 @@ export default function AdminProductsPage() {
                   <TableCell>
                     <div className="relative h-16 w-16">
                       <Image
-                        src={`http://127.0.0.1:8000/media/products/${product.image}`}
+                        src={`http://127.0.0.1:8000/${product.image}`}
                         alt={product.name}
                         layout="fill"
                         objectFit="cover"
@@ -89,7 +89,7 @@ export default function AdminProductsPage() {
                     </div>
                   </TableCell>
                   <TableCell className="font-medium">{product.name}</TableCell>
-                  <TableCell>${product.price}</TableCell>
+                  <TableCell>{product.price} ฿</TableCell>
                   <TableCell>{product.stock}</TableCell>
                   <TableCell>{product.category}</TableCell>
                   <TableCell className="text-right">

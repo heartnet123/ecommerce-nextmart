@@ -34,7 +34,6 @@ const useProductStore = create<ProductStoreState>((set) => ({
   ) => {
     set({ loading: true });
     try {
-      // Determine which endpoint to use based on whether there are search/filter params
       const hasSearchFilters = query || category || minPrice || maxPrice;
       const endpoint = hasSearchFilters 
         ? "http://127.0.0.1:8000/api/products/search/" 
