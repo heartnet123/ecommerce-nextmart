@@ -39,7 +39,7 @@ export default async function ProductDetail({ params }: Props) {
     notFound();
   }
   const imageUrl = product.image
-  ? `http://127.0.0.1:8000/media/products/${product.image}`
+  ? `http://127.0.0.1:8000/${product.image}/`
   : "/products/placeholder.jpg";
   
   return (

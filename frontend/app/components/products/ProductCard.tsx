@@ -18,7 +18,7 @@ export default function ProductCard({ product }: ProductCardProps) {
   const { addToCart } = useCartStore();
 
   const imageUrl = product.image
- ? `http://127.0.0.1:8000/media/products/${product.image}`
+ ? `http://127.0.0.1:8000/${product.image}/`
     : "/images/placeholder.png";
 
     const handleAddToCart = () => {
