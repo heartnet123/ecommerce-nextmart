@@ -5,18 +5,16 @@ import { useEffect, useState } from "react";
 import { Product } from "./types/index";
 import ProductCard from "./components/products/ProductCard";
 import { Button } from "@/components/ui/button";
+import { Gamepad2, Gift, Star, ArrowRight } from "lucide-react";
 
 export default function Home() {
   const [featuredProducts, setFeaturedProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // fetch สินค้า
     const fetchProducts = async () => {
       try {
-        // API คืน JSON เป็นอาร์เรย์ของสินค้า
-        const res = await fetch("http://127.0.0.1:8000/api/products/", {
-        });
+        const res = await fetch("http://127.0.0.1:8000/api/products/");
         if (!res.ok) {
           throw new Error("Failed to fetch products");
         }
@@ -35,22 +33,13 @@ export default function Home() {
   if (loading) {
     return (
       <div className="flex flex-col min-h-screen">
-        <div className="flex-grow container mx-auto px-4 py-8">
+        <div className="flex-grow container mx-auto px-4 py-16">
           <div className="flex justify-center items-center h-64">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+            <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-primary"></div>
           </div>
         </div>
         
-        {/* Footer */}
-        <footer className="bg-card py-8 text-center text-muted-foreground mt-auto">
-          <div className="container mx-auto px-4">
-            <p>
-              จัดทำโดย นายจารุวิทย์ จงเชื่อกลาง 65070032
-              <br />
-              &copy; 2025 NextMart. All rights reserved.
-            </p>
-          </div>
-        </footer>
+        <Footer />
       </div>
     );
   }
@@ -70,9 +59,19 @@ export default function Home() {
         </div>
       </section>
 
-        {/* Featured Products */}
+        {/* Featured Products - Improved */}
         <section className="container mx-auto px-4 py-16">
-          <h2 className="text-3xl font-bold mb-8">สินค้าแนะนำ</h2>
+          <div className="flex justify-between items-center mb-10">
+            <div>
+              <h2 className="text-3xl font-bold flex items-center">
+                <Star className="text-primary mr-2 h-6 w-6" /> สินค้าแนะนำ
+              </h2>
+            </div>
+            <Button variant="ghost" className="text-primary">
+              ดูทั้งหมด <ArrowRight className="ml-2 h-4 w-4" />
+            </Button>
+          </div>
+          
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {featuredProducts.map((product) => (
               <ProductCard key={product.id} product={product} />
@@ -80,44 +79,99 @@ export default function Home() {
           </div>
         </section>
 
-        {/* Categories */}
-        <section className="bg-secondary py-16">
-          <div className="container mx-auto px-4">
-            <h2 className="text-3xl font-bold mb-8">Shop by Category</h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="bg-background rounded-lg p-6 text-center hover:shadow-lg transition-shadow">
+        {/* Categories - Improved */}
+        <section className="py-16 relative overflow-hidden">
+          <div className="absolute inset-0 bg-gradient-to-b from-secondary/50 to-secondary z-0"></div>
+          <div className="container mx-auto px-4 relative z-10">
+            <h2 className="text-3xl font-bold mb-10 text-center">Shop by Category</h2>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+              <div className="bg-background rounded-xl p-8 shadow-lg transform transition-all duration-300 hover:scale-105 hover:shadow-xl border border-primary/10">
+                <div className="bg-primary/10 rounded-full w-16 h-16 flex items-center justify-center mb-6">
+                  <Gamepad2 className="h-8 w-8 text-primary" />
+                </div>
                 <h3 className="text-2xl font-semibold mb-4">Physical Products</h3>
-                <p className="text-muted-foreground mb-4">
-                  Gaming gear, accessories, and more
+                <p className="text-muted-foreground mb-6">
+                  High-quality gaming peripherals, accessories, and collectibles for the ultimate gaming setup.
                 </p>
-                <Button variant="outline" size="lg">
-                  <Link href="/products/physical">Browse Physical Products</Link>
+                <Button variant="default" size="lg" className="w-full">
+                  <Link href="/products/physical" className="w-full inline-block">Browse Physical Products</Link>
                 </Button>
               </div>
-              <div className="bg-background rounded-lg p-6 text-center hover:shadow-lg transition-shadow">
+              
+              <div className="bg-background rounded-xl p-8 shadow-lg transform transition-all duration-300 hover:scale-105 hover:shadow-xl border border-primary/10">
+                <div className="bg-primary/10 rounded-full w-16 h-16 flex items-center justify-center mb-6">
+                  <Gift className="h-8 w-8 text-primary" />
+                </div>
                 <h3 className="text-2xl font-semibold mb-4">Digital Keys</h3>
-                <p className="text-muted-foreground mb-4">
-                  Game keys, DLCs, and in-game items
+                <p className="text-muted-foreground mb-6">
+                  Instant access to the latest games, DLCs, and in-game items. Play within minutes of purchase.
                 </p>
-                <Button variant="outline" size="lg">
-                  <Link href="/products/digital">Browse Digital Keys</Link>
+                <Button variant="default" size="lg" className="w-full">
+                  <Link href="/products/digital" className="w-full inline-block">Browse Digital Keys</Link>
                 </Button>
               </div>
             </div>
           </div>
         </section>
+        
+        {/* Why Choose Nextmart */}
+        <section className="container mx-auto px-4 py-16">
+          <h2 className="text-3xl font-bold mb-10 text-center">Why Choose NextMart</h2>
+          
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            {[
+              {
+                title: "Authentic Products",
+                description: "All our products are 100% genuine with manufacturer warranty",
+                icon: "Shield"
+              },
+              {
+                title: "Fast Delivery",
+                description: "Physical products shipped within 24 hours of order confirmation",
+                icon: "Truck"
+              },
+              {
+                title: "Instant Digital Keys",
+                description: "Get your game keys delivered instantly to your email",
+                icon: "Zap"
+              },
+              {
+                title: "24/7 Support",
+                description: "Our customer support team is available round the clock",
+                icon: "HeadsetIcon"
+              }
+            ].map((item, index) => (
+              <div key={index} className="bg-secondary/30 rounded-lg p-6 text-center hover:bg-secondary/50 transition-colors">
+                <div className="rounded-full bg-primary/10 w-12 h-12 flex items-center justify-center mx-auto mb-4">
+                  <div className="text-primary text-xl">●</div>
+                </div>
+                <h3 className="text-xl font-semibold mb-2">{item.title}</h3>
+                <p className="text-muted-foreground">{item.description}</p>
+              </div>
+            ))}
+          </div>
+        </section>
       </main>
       
-      {/* Footer */}
-      <footer className="bg-card py-8 text-center text-muted-foreground mt-auto">
-        <div className="container mx-auto px-4">
-          <p>
-            จัดทำโดย นายจารุวิทย์ จงเชื่อกลาง 65070032
-            <br />
-            &copy; 2025 NextMart. All rights reserved.
-          </p>
-        </div>
-      </footer>
+      <Footer />
     </div>
   );
 }
+
+  {/* Footer */}
+const Footer = () => (
+  <footer className="bg-card py-8 text-center text-muted-foreground mt-auto border-t border-border">
+    <div className="container mx-auto px-4">
+      <div className="flex flex-col md:flex-row justify-between items-center mb-8">
+      </div>
+      <div className="border-t border-border pt-6">
+        <p>
+          จัดทำโดย นายจารุวิทย์ จงเชื่อกลาง 65070032
+          <br />
+          &copy; 2025 NextMart. All rights reserved.
+        </p>
+      </div>
+    </div>
+  </footer>
+);

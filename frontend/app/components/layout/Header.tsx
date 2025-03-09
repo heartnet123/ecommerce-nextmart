@@ -1,6 +1,6 @@
 // app/components/layout/Header.tsx
 import Link from "next/link";
-import { ShoppingCart, User, Menu } from "lucide-react";
+import { ShoppingCart, User, Menu, LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -10,6 +10,8 @@ import {
 } from "@/components/ui/dropdown-menu";
 import ThemeToggle from "@/components/ui/ThemeToggle";
 import { cookies } from "next/headers";
+import LogoutButton from "../profile/LogoutButton";
+
 
 interface HeaderProps {
   isAuthenticated: boolean;
@@ -66,6 +68,7 @@ export default async function Header({ isAuthenticated, isAdmin }: HeaderProps) 
                     Profile
                   </Link>
                 </DropdownMenuItem>
+                <LogoutButton />
                 {isAdmin && (
                   <DropdownMenuItem>
                     <Link href="/admin/products" className="w-full">
@@ -73,9 +76,6 @@ export default async function Header({ isAuthenticated, isAdmin }: HeaderProps) 
                     </Link>
                   </DropdownMenuItem>
                 )}
-                <DropdownMenuItem>
-{/* ใช้ LogoutButton แทน Link */}
-                </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
           )}

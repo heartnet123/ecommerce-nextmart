@@ -1,23 +1,111 @@
 // app/products/[id]/page.tsx
 
+
+
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { notFound } from "next/navigation";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Textarea } from "@/components/ui/textarea";
 
-type Product = {
+type Review = {
   id: string;
-  name: string;
-  description: string;
-  price: number;
-  category: string;
-  stock: number;
-  image: string | null;
+  user: {
+    id: number;
+    username: string;
+    first_name: string;
+    last_name: string;
+    is_staff: boolean;
+  };
+  rating: number;
+  comment: string;
+  created_at: string;
+  helpful_count: number;
 };
 
+type ReviewsResponse = {
+  reviews: Review[];
+  count: number;
+  average_rating: number;
+  rating_distribution: {
+    [key: string]: number;
+  };
+};
 type Props = {
   params: Promise<{ id: string }>; // Type params as a Promise
 };
+
+async function getProductReviews(productId: string): Promise<ReviewsResponse> {
+  try {
+    console.log(`Fetching reviews for product ${productId}`);
+    const res = await fetch(`http://127.0.0.1:8000/api/products/${productId}/reviews/`, {
+      cache: "no-store",
+    });
+
+    if (!res.ok) {
+      console.error(`Failed to fetch reviews: ${res.status} ${res.statusText}`);
+      return {
+        reviews: [],
+        count: 0,
+        average_rating: 0,
+        rating_distribution: { "1": 0, "2": 0, "3": 0, "4": 0, "5": 0 }
+      };
+    }
+
+    const data = await res.json();
+    console.log('Reviews data:', data);
+    return data;
+  } catch (error) {
+    console.error('Error fetching reviews:', error);
+    return {
+      reviews: [],
+      count: 0,
+      average_rating: 0,
+      rating_distribution: { "1": 0, "2": 0, "3": 0, "4": 0, "5": 0 }
+    };
+  }
+}
+
+async function ReviewsList({ productId }: { productId: string }) {
+  const reviewData = await getProductReviews(productId);
+  
+  if (!reviewData.reviews || reviewData.reviews.length === 0) {
+    return (
+      <div className="text-center py-4">
+        <p>No reviews found</p>
+      </div>
+    );
+  }
+
+  return (
+    <>
+      {reviewData.reviews.map((review: Review) => (
+        <div key={review.id} className="border-b border-gray-200 pb-6 mb-6 last:border-0 last:pb-0">
+          <div className="flex justify-between mb-2">
+            <div className="flex items-center">
+              <div className="mr-2 flex text-yellow-400">
+                {[1, 2, 3, 4, 5].map((star) => (
+                  <span key={star} className={star <= review.rating ? "text-yellow-400" : "text-gray-300"}>
+                    ★
+                  </span>
+                ))}
+              </div>
+              <span className="font-medium ml-2">{review.user.username}</span>
+            </div>
+            <span className="text-sm text-gray-500">
+              {new Date(review.created_at).toLocaleDateString()}
+            </span>
+          </div>
+          <p className="text-gray-700 mt-2">{review.comment}</p>
+          <div className="flex items-center mt-3 text-sm text-gray-500">
+            <span>{review.helpful_count} found this helpful</span>
+          </div>
+        </div>
+      ))}
+    </>
+  );
+}
+
 
 async function getProduct(id: string) {
   const res = await fetch(`http://127.0.0.1:8000/api/products/${id}/`, {
@@ -34,6 +122,7 @@ async function getProduct(id: string) {
 export default async function ProductDetail({ params }: Props) {
   const { id } = await params; // Await params to get id
   const product = await getProduct(id);
+  const reviewData = await getProductReviews(id);
 
   if (!product) {
     notFound();
@@ -79,18 +168,23 @@ export default async function ProductDetail({ params }: Props) {
               <h1 className="text-3xl sm:text-4xl font-bold tracking-tight mb-4">{product.name}</h1>
               
               <div className="flex items-center space-x-2 mb-6">
-                <div className="flex">
-                  {[...Array(5)].map((_, i) => (
-                    <span key={i}>★</span>
-                  ))}
+                <div className="flex text-yellow-400">
+                  {[1, 2, 3, 4, 5].map((star) => (
+                    <span 
+                       key={star}
+                       className={star <= Math.round(product.average_rating || 0) ? "text-yellow-400" : "text-gray-300"}
+                   >
+                     ★
+                    </span>
+              ))}
+                  </div>
+                  <span className="text-sm">({product.review_count || 0} reviews)</span>
                 </div>
-                <span className="text-sm">(0 reviews)</span>
-              </div>
               
               <p className="mb-8 leading-relaxed">{product.description}</p>
               
               <div className="flex flex-col sm:flex-row sm:items-center gap-4 mb-8">
-                <span className="text-3xl font-bold">${product.price}</span>
+                <span className="text-3xl font-bold">{product.price} ฿</span>
                 <span className={`inline-flex items-center px-3 py-1.5 rounded-full text-sm ${
                   product.stock > 10
                     ? "bg-background" 
@@ -155,13 +249,13 @@ export default async function ProductDetail({ params }: Props) {
       <div className="mt-12">
         <Tabs defaultValue="details" className="w-full">
           <TabsList className="w-full sm:w-auto flex rounded-lg bg-background p-1 mb-8">
-            <TabsTrigger value="details" className="flex-1 sm:flex-none rounded-md data-[state=active]:bg-white data-[state=active]:shadow-sm">
+            <TabsTrigger value="details" className="flex-1 sm:flex-none rounded-md data-[state=active]:bg-white-100 data-[state=active]:shadow-sm">
               Description
             </TabsTrigger>
-            <TabsTrigger value="specs" className="flex-1 sm:flex-none rounded-md data-[state=active]:bg-white data-[state=active]:shadow-sm">
+            <TabsTrigger value="specs" className="flex-1 sm:flex-none rounded-md data-[state=active]:bg-white-100 data-[state=active]:shadow-sm">
               Specifications
             </TabsTrigger>
-            <TabsTrigger value="reviews" className="flex-1 sm:flex-none rounded-md data-[state=active]:bg-white data-[state=active]:shadow-sm">
+            <TabsTrigger value="reviews" className="flex-1 sm:flex-none rounded-md data-[state=active]:bg-white-100 data-[state=active]:shadow-sm">
               Reviews
             </TabsTrigger>
           </TabsList>
@@ -206,29 +300,52 @@ export default async function ProductDetail({ params }: Props) {
           </TabsContent>
           
           <TabsContent value="reviews" className="pt-4">
-            <div className="bg-background rounded-xl overflow-hidden">
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div className="bg-background p-8 flex flex-col items-center justify-center text-center">
-                  <span className="text-5xl font-bold ">0.0</span>
-                  <div className="flex text-yellow-400 text-xl my-2">
-                    ★★★★★
-                  </div>
-                  <p className="text-sm text-gray-500">Based on 0 reviews</p>
-                </div>
-                
-                <div className="md:col-span-2 p-8">
-                  <h3 className="text-xl font-semibold mb-4">Customer Reviews</h3>
-                  
-                  <div className="bg-background rounded-lg p-8 text-center">
-                    <p className="mb-4">
-                      There are no reviews yet.
-                    </p>
-                    <Button>Write a Review</Button>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </TabsContent>
+  <div className="bg-background rounded-xl overflow-hidden">
+    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      {/* Rating Summary */}
+      <div className="bg-background p-8 flex flex-col items-center justify-center text-center">
+        <span className="text-5xl font-bold">{reviewData.average_rating ? product.average_rating : '0.0'}</span>
+        <div className="flex text-xl my-2">
+          {[1, 2, 3, 4, 5].map((star) => (
+            <span key={star} className={star <= Math.round(reviewData.average_rating || 0) ? "text-yellow-400" : "text-gray-300"}>
+              ★
+            </span>
+          ))}
+        </div>
+        <p className="text-sm text-gray-500">Based on {reviewData.count || 0} reviews</p>
+      </div>
+      
+      {/* Reviews List */}
+      <div className="md:col-span-2 p-8">
+        <div className="flex justify-between items-center mb-6">
+          <h3 className="text-xl font-semibold">Customer Reviews</h3>
+          <a href={`/products/${product.id}/review`}>
+            <Button>
+              Write a Review
+            </Button>
+          </a>
+        </div>
+        
+        {(reviewData.count > 0) ? (
+          <div className="space-y-6">
+            <ReviewsList productId={product.id} />
+          </div>
+        ) : (
+          <div className="bg-background rounded-lg p-8 text-center">
+            <p className="mb-4">
+              There are no reviews yet.
+            </p>
+            <a href={`/products/${product.id}/review`}>
+              <Button>
+                Be the first to review
+              </Button>
+            </a>
+          </div>
+        )}
+      </div>
+    </div>
+  </div>
+</TabsContent>
         </Tabs>
       </div>
       
@@ -245,7 +362,7 @@ export default async function ProductDetail({ params }: Props) {
               </div>
               <div className="p-4">
                 <h3 className="font-medium mb-2">Related Product {i}</h3>
-                <p className="font-bold">$99.00</p>
+                <p className="font-bold">99.00 ฿</p>
               </div>
             </div>
           ))}
