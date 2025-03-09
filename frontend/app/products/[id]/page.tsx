@@ -6,7 +6,7 @@ import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { notFound } from "next/navigation";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Textarea } from "@/components/ui/textarea";
+import  ReviewForm from "@/app/components/products/ReviewForm";
 
 type Review = {
   id: string;
@@ -96,10 +96,7 @@ async function ReviewsList({ productId }: { productId: string }) {
               {new Date(review.created_at).toLocaleDateString()}
             </span>
           </div>
-          <p className="text-gray-700 mt-2">{review.comment}</p>
-          <div className="flex items-center mt-3 text-sm text-gray-500">
-            <span>{review.helpful_count} found this helpful</span>
-          </div>
+          <p className="text-gray-200 mt-2">{review.comment}</p>
         </div>
       ))}
     </>
@@ -193,9 +190,9 @@ export default async function ProductDetail({ params }: Props) {
                     : "bg-background"
                 }`}>
                   {product.stock > 10 
-                    ? "In Stock" 
+                    ? `${product.stock} in stock ` 
                     : product.stock > 0 
-                    ? `Only ${product.stock} left` 
+                    ? `${product.stock} in stock` 
                     : "Out of Stock"}
                 </span>
               </div>
@@ -313,6 +310,8 @@ export default async function ProductDetail({ params }: Props) {
           ))}
         </div>
         <p className="text-sm text-gray-500">Based on {reviewData.count || 0} reviews</p>
+
+        <ReviewForm productId={product.id} />
       </div>
       
       {/* Reviews List */}

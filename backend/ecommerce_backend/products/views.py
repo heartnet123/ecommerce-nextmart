@@ -150,7 +150,7 @@ class ProductReviewsAPIView(APIView):
         # ตรวจสอบว่าผู้ใช้ซื้อสินค้านี้หรือไม่
         has_purchased = OrderItem.objects.filter(
             order__user=user,
-            order__status='Delivered',  # สินค้าต้องถูกส่งแล้ว
+            order__status='completed',  # สินค้าต้องถูกส่งแล้ว
             product=product
         ).exists()
         
@@ -170,7 +170,7 @@ class ProductReviewsAPIView(APIView):
         # หา order ล่าสุดที่ซื้อสินค้านี้
         order_item = OrderItem.objects.filter(
             order__user=user,
-            order__status='Delivered',
+            order__status='completed',
             product=product
         ).order_by('-order__created_at').first()
         
@@ -200,7 +200,7 @@ class CanReviewProductAPIView(APIView):
         # ตรวจสอบว่าซื้อสินค้านี้หรือยัง
         has_purchased = OrderItem.objects.filter(
             order__user=user,
-            order__status='Delivered',
+            order__status='completed',
             product=product
         ).exists()
         
@@ -228,7 +228,7 @@ class ReviewableProductsAPIView(APIView):
         # สินค้าที่ซื้อและจัดส่งแล้ว
         purchased_products_ids = OrderItem.objects.filter(
             order__user=user,
-            order__status='Delivered'
+            order__status='completed'
         ).values_list('product_id', flat=True).distinct()
         
         # สินค้าที่เคยรีวิวแล้ว

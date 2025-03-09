@@ -68,14 +68,26 @@ export default async function Header({ isAuthenticated, isAdmin }: HeaderProps) 
                     Profile
                   </Link>
                 </DropdownMenuItem>
-                <LogoutButton />
                 {isAdmin && (
-                  <DropdownMenuItem>
-                    <Link href="/admin/products" className="w-full">
-                      Admin
-                    </Link>
-                  </DropdownMenuItem>
+                  <>
+                    <DropdownMenuItem>
+                      <Link href="/admin/products" className="w-full">
+                        Manage Products
+                      </Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem>
+                      <Link href="/admin/orders" className="w-full">
+                        Manage Orders
+                      </Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem>
+                      <Link href="/admin/category" className="w-full">
+                        Manage Category
+                      </Link>
+                    </DropdownMenuItem>
+                  </>
                 )}
+                <LogoutButton />
               </DropdownMenuContent>
             </DropdownMenu>
           )}

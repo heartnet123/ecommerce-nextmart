@@ -56,6 +56,12 @@ class OrderCreateView(APIView):
 class AdminOrderView(APIView):
     permission_classes = [IsAuthenticated, IsAdminUser]
 
+    def get(self, request, pk=None):
+        """ดึงข้อมูลคำสั่งซื้อทั้งหมด"""
+        orders = Order.objects.all()
+        serializer = OrderSerializer(orders, many=True)
+        return Response(serializer.data)
+
     def put(self, request, pk):
         """อัปเดตคำสั่งซื้อ (เช่น เปลี่ยนสถานะ)"""
         try:
