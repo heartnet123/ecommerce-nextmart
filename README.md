@@ -1,12 +1,6 @@
-# NextMart
-
-![Logo](https://api.deepai.org/job-view-file/0cf0c71d-bd2d-4320-808e-81186f9fdfad/outputs/output.jpg)
-
-
 # NextMart - E-Commerce Project
-
 E-Commerce Project Subject Client-Side Development
-
+![Logo](https://api.deepai.org/job-view-file/0cf0c71d-bd2d-4320-808e-81186f9fdfad/outputs/output.jpg)
 
 ## Features
 
@@ -32,7 +26,7 @@ python manage.py runserver
 cd frontend
 npm install
 npm run dev
-    
+ ```   
 ## Demo
 
 Insert gif or link to demo
