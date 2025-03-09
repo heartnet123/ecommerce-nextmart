@@ -18,7 +18,6 @@ interface HeaderProps {
   isAdmin: boolean;
 }
 
-
 export default async function Header({ isAuthenticated, isAdmin }: HeaderProps) {
   const cookieStore = await cookies();
   const initialTheme = cookieStore.get("theme")?.value || "light";
@@ -80,11 +79,11 @@ export default async function Header({ isAuthenticated, isAdmin }: HeaderProps) 
                         Manage Orders
                       </Link>
                     </DropdownMenuItem>
-                    <DropdownMenuItem>
+                    {/* <DropdownMenuItem>
                       <Link href="/admin/category" className="w-full">
                         Manage Category
                       </Link>
-                    </DropdownMenuItem>
+                    </DropdownMenuItem> */}
                   </>
                 )}
                 <LogoutButton />

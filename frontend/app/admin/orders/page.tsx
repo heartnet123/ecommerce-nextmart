@@ -149,13 +149,16 @@ export default function AdminOrdersPage() {
 
   const updateOrderStatus = async (orderId: number, newStatus: string) => {
     try {
+      console.log(`Updating order ${orderId} to status: ${newStatus}`);
       const accessToken = localStorage.getItem("accessToken");
       
-      await axios.patch(
+      const response = await axios.patch(
         `http://127.0.0.1:8000/api/orders/admin/${orderId}/`, 
         { status: newStatus },
         { headers: { Authorization: `Bearer ${accessToken}` } }
       );
+      
+      console.log("Status update response:", response.data);
       
       // Update local state
       setOrders(orders.map(order => 
@@ -165,6 +168,10 @@ export default function AdminOrdersPage() {
       toast.success(`Order status updated to ${newStatus}`);
     } catch (error) {
       console.error("Error updating order status:", error);
+      if (axios.isAxiosError(error)) {
+        console.error("Response data:", error.response?.data);
+        console.error("Status code:", error.response?.status);
+      }
       toast.error("Failed to update order status");
     }
   };
@@ -173,12 +180,6 @@ export default function AdminOrdersPage() {
     switch ((status || '').toLowerCase()) {
       case 'pending':
         return "bg-yellow-100 text-yellow-800";
-      case 'processing':
-        return "bg-blue-100 text-blue-800";
-      case 'shipped':
-        return "bg-purple-100 text-purple-800";
-      case 'delivered':
-        return "bg-green-100 text-green-800";
       case 'cancelled':
         return "bg-red-100 text-red-800";
       case 'completed':
@@ -348,9 +349,6 @@ export default function AdminOrdersPage() {
                           </SelectTrigger>
                           <SelectContent>
                             <SelectItem value="pending">Pending</SelectItem>
-                            <SelectItem value="processing">Processing</SelectItem>
-                            <SelectItem value="shipped">Shipped</SelectItem>
-                            <SelectItem value="delivered">Delivered</SelectItem>
                             <SelectItem value="completed">Completed</SelectItem>
                             <SelectItem value="cancelled">Cancelled</SelectItem>
                           </SelectContent>
