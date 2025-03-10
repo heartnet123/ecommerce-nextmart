@@ -1,7 +1,7 @@
 # NextMart - E-Commerce Project
 E-Commerce Project Subject Client-Side Development
 
-![Logo](https://api.deepai.org/job-view-file/0cf0c71d-bd2d-4320-808e-81186f9fdfad/outputs/output.jpg)
+![Logo](https://i.ibb.co/pvrv9xXn/output.png)
 
 ## Features
 
