@@ -274,21 +274,6 @@ export default function AccountPage() {
                     <span>ประวัติการสั่งซื้อ</span>
                   </button>
                   <Separator />
-                  <button 
-                    className="flex items-center px-6 py-4 hover:bg-gray-500 text-left transition-colors"
-                    onClick={() => router.push('/payment-methods')}
-                  >
-                    <CreditCard className="h-5 w-5 mr-3 text-primary" />
-                    <span>วิธีการชำระเงิน</span>
-                  </button>
-                  <Separator />
-                  <button 
-                    className="flex items-center px-6 py-4 hover:bg-gray-500 text-left transition-colors"
-                    onClick={() => router.push('/settings')}
-                  >
-                    <Settings className="h-5 w-5 mr-3 text-primary" />
-                    <span>การตั้งค่า</span>
-                  </button>
                 </nav>
               </CardContent>
             </Card>
