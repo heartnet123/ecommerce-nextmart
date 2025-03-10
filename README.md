@@ -1,7 +1,8 @@
+![Logo](https://i.ibb.co/pvrv9xXn/output.png)
 # NextMart - E-Commerce Project
 E-Commerce Project Subject Client-Side Development
 
-![Logo](https://i.ibb.co/pvrv9xXn/output.png)
+
 
 ## Features
 
