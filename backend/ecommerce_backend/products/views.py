@@ -14,12 +14,14 @@ from django.db.models import Avg
 from orders.models import Order, OrderItem
 
 class ProductListAPIView(APIView):
+    """เรียกดูสินค้าทั้งหมด"""
     def get(self, request):
         products = Product.objects.all().order_by('id')
         serializer = ProductSerializer(products, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 class ProductDetailAPIView(APIView):
+    """เรียกดูสินค้ารายชิ้น"""
     def get(self, request, pk):
         try:
             product = Product.objects.get(pk=pk)

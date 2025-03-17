@@ -12,7 +12,6 @@ import ThemeToggle from "@/components/ui/ThemeToggle";
 import { cookies } from "next/headers";
 import LogoutButton from "../profile/LogoutButton";
 
-
 interface HeaderProps {
   isAuthenticated: boolean;
   isAdmin: boolean;
@@ -21,7 +20,6 @@ interface HeaderProps {
 export default async function Header({ isAuthenticated, isAdmin }: HeaderProps) {
   const cookieStore = await cookies();
   const initialTheme = cookieStore.get("theme")?.value || "light";
-
   return (
     <header className="border-b">
       <div className="container mx-auto px-4 py-4 flex items-center justify-between">
@@ -37,6 +35,9 @@ export default async function Header({ isAuthenticated, isAdmin }: HeaderProps) 
           </Link>
           <Link href="/products/digital" className="hover:text-primary">
             Digital Keys
+          </Link>
+          <Link href="/compare" className="hover:text-primary">
+            Compare Product
           </Link>
         </nav>
         <div className="flex items-center space-x-4">

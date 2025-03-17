@@ -22,7 +22,6 @@ import {
 } from "@/components/ui/select";
 import { Loader2 } from "lucide-react";
 
-// Define Order type matching backend response
 type OrderItem = {
   id: number;
   product: number; // Product ID
@@ -32,7 +31,7 @@ type OrderItem = {
 type Order = {
   id: number;
   order_number?: string;
-  user: number | { // เปลี่ยนเป็น union type เพื่อรองรับทั้ง ID และ object
+  user: number | { 
     id: number;
     username: string;
     email?: string;
@@ -93,17 +92,14 @@ export default function AdminOrdersPage() {
     try {
       const accessToken = localStorage.getItem("accessToken");
       
-      // เลือกใช้ endpoint ที่เหมาะสม - ลองใช้ admin endpoint ก่อน
       const response = await axios.get(`http://127.0.0.1:8000/api/orders/admin/`, {
         headers: { Authorization: `Bearer ${accessToken}` },
       }).catch(() => {
-        // ถ้าไม่มี admin endpoint ให้ใช้ endpoint ปกติ
         return axios.get(`http://127.0.0.1:8000/api/orders/`, {
           headers: { Authorization: `Bearer ${accessToken}` },
         });
       });
-      
-      // Process the response data
+
       const ordersData = response.data;
       
       // Extract all user IDs
@@ -118,7 +114,6 @@ export default function AdminOrdersPage() {
       });
       
       
-      // Extract product IDs and fetch their details
       const allProductIds = ordersData.flatMap((order: any) => 
         (order.cartItems || order.items || []).map((item: OrderItem) => item.product)
       );
@@ -127,9 +122,7 @@ export default function AdminOrdersPage() {
         fetchProductDetails(allProductIds);
       }
       
-      // Format orders with consistent structure
       const formattedOrders = ordersData.map((order: any) => {
-        // Handle both cartItems and items
         const itemsArray = order.cartItems || order.items || [];
         return {
           ...order,
@@ -204,13 +197,13 @@ export default function AdminOrdersPage() {
     }
   };
 
-  // Get item count safely
+  // Get item count 
   const getItemCount = (order: Order) => {
     const items = order.cartItems || order.items || [];
     return items.length;
   };
 
-  // Get order total safely
+  // Get order total 
   const getOrderTotal = (order: Order) => {
     if (typeof order.total_price === 'number') {
       return order.total_price.toLocaleString();
@@ -221,26 +214,22 @@ export default function AdminOrdersPage() {
     return '0';
   };
 
-  // Get product name safely
+  // Get product name 
   const getProductDetails = (productId: number) => {
     return productDetails[productId] || { name: `Product #${productId}` };
   };
 
-  // ฟังก์ชันสำหรับดึงข้อมูลผู้ใช้ (เพิ่มใหม่)
+  // ฟังก์ชันสำหรับดึงข้อมูลผู้ใช้ 
   const getUserName = (order: Order) => {
-    // ถ้า order.user เป็น object
     if (typeof order.user === 'object' && order.user !== null) {
       return order.user.username;
     }
     
-    // ถ้า order.user เป็น ID และมีข้อมูลของผู้ใช้นั้นใน userDetails
     if (typeof order.user === 'number' && userDetails[order.user]) {
       const user = userDetails[order.user];
-      // ถ้ามี first_name และ last_name ให้ใช้ทั้งสองอย่าง
       if (user.first_name && user.last_name) {
         return `${user.first_name} ${user.last_name}`;
       }
-      // ไม่เช่นนั้นใช้ username
       return user.username;
     }
     

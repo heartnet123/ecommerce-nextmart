@@ -12,6 +12,7 @@ from django.contrib.auth import logout
 
 User = get_user_model()
 class RegisterUser(APIView):
+    """ลงทะเบียนผู้ใช้ใหม่"""
     permission_classes = [AllowAny]
 
     def post(self, request):
@@ -39,6 +40,7 @@ class RegisterUser(APIView):
 
 
 class GetUserProfile(APIView):
+    """เรียกดูข้อมูลผู้ใช้"""
     permission_classes = [IsAuthenticated]
 
     def get(self, request):
@@ -56,6 +58,7 @@ class LogoutUser(APIView):
         })
         
 class IsAdmin(APIView):
+    """เช็คสถานะว่าเป็น Admin หรือไม่"""
     permission_classes = [IsAuthenticated]
     
     def get(self, request):

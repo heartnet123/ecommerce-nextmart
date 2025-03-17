@@ -5,12 +5,67 @@ import { useEffect, useState } from "react";
 import { Product } from "./types/index";
 import ProductCard from "./components/products/ProductCard";
 import { Button } from "@/components/ui/button";
-import { Gamepad2, Gift, Star, ArrowRight } from "lucide-react";
+import { Gamepad2, Gift, Star, ArrowRight, ChevronLeft, ChevronRight } from "lucide-react";
+import Image from "next/image";
 
 export default function Home() {
   const [featuredProducts, setFeaturedProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
+  const [currentSlide, setCurrentSlide] = useState(0);
 
+  // Promotional slides data
+  const promotionalSlides = [
+    {
+      id: 1,
+      image: "https://wallpapers.com/images/hd/genshin-impact-game-poster-wlq3ykrxbaoadjow.jpg", 
+      title: "Summer Gaming Sale",
+      description: "Up to 70% off on selected gaming gear",
+      buttonText: "Shop Now",
+      buttonLink: "/products/"
+    },
+    {
+      id: 2,
+      image: "https://images8.alphacoders.com/139/thumb-1920-1393476.jpg",
+      title: "New Game Releases",
+      description: "Get the latest AAA titles with exclusive pre-order bonuses",
+      buttonText: "Pre-order Now",
+      buttonLink: "/products/"
+    },
+    {
+      id: 3,
+      image: "https://picfiles.alphacoders.com/431/thumb-1920-431451.png",
+      title: "Gaming Accessories Bundle",
+      description: "Complete your setup with our curated bundles",
+      buttonText: "View Bundles",
+      buttonLink: "/products/"
+    }
+  ];
+
+  // Auto-slide 
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentSlide((prevSlide) => 
+        prevSlide === promotionalSlides.length - 1 ? 0 : prevSlide + 1
+      );
+    }, 5000); // every 5 seconds
+    
+    return () => clearInterval(timer);
+  }, [promotionalSlides.length]);
+
+  // Functions to navigate between slides
+  const goToNextSlide = () => {
+    setCurrentSlide((prevSlide) => 
+      prevSlide === promotionalSlides.length - 1 ? 0 : prevSlide + 1
+    );
+  };
+
+  const goToPrevSlide = () => {
+    setCurrentSlide((prevSlide) => 
+      prevSlide === 0 ? promotionalSlides.length - 1 : prevSlide - 1
+    );
+  };
+
+  // Product fetching
   useEffect(() => {
     const fetchProducts = async () => {
       try {
@@ -47,15 +102,75 @@ export default function Home() {
   return (
     <div className="flex flex-col min-h-screen">
     <main className="flex-grow bg-background">
-      {/* Hero Section */}
-      <section className="bg-gradient-to-r from-primary/10 to-primary/5 py-20">
-        <div className="container mx-auto px-4 text-center">
-          <h1 className="text-4xl md:text-6xl font-bold mb-6">
-            Your One-Stop Gaming Shop
-          </h1>
-          <p className="text-xl text-muted-foreground mb-8">
-            Physical gaming gear and digital keys, all in one place
-          </p>
+      {/* Hero Section - Image Slider */}
+      <section className="relative h-[500px] overflow-hidden">
+        {/* Slides */}
+        <div className="h-full relative">
+          {promotionalSlides.map((slide, index) => (
+            <div 
+              key={slide.id}
+              className={`absolute inset-0 transition-opacity duration-1000 ease-in-out ${
+                index === currentSlide ? "opacity-100" : "opacity-0 pointer-events-none"
+              }`}
+            >
+              {/* Image with overlay */}
+              <div className="absolute inset-0 bg-black/40 z-10" /> {/* Dark overlay */}
+              <div className="relative h-full w-full">
+                <Image 
+                  src={slide.image} 
+                  alt={slide.title}
+                  fill
+                  priority={index === 0}
+                  className="object-cover"
+                />
+              </div>
+              
+              {/* Slide content */}
+              <div className="absolute inset-0 z-20 flex items-center justify-center">
+                <div className="container mx-auto px-4 text-center text-white">
+                  <h1 className="text-4xl md:text-6xl font-bold mb-6 drop-shadow-lg">
+                    {slide.title}
+                  </h1>
+                  <p className="text-xl mb-8 drop-shadow-md max-w-2xl mx-auto">
+                    {slide.description}
+                  </p>
+                  <Button size="lg" variant="default" asChild>
+                    <Link href={slide.buttonLink}>{slide.buttonText}</Link>
+                  </Button>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+        
+        {/* Navigation buttons */}
+        <button 
+          onClick={goToPrevSlide}
+          className="absolute left-4 top-1/2 transform -translate-y-1/2 z-30 bg-black/30 hover:bg-black/50 text-white rounded-full p-2 transition-all"
+          aria-label="Previous slide"
+        >
+          <ChevronLeft size={24} />
+        </button>
+        <button 
+          onClick={goToNextSlide}
+          className="absolute right-4 top-1/2 transform -translate-y-1/2 z-30 bg-black/30 hover:bg-black/50 text-white rounded-full p-2 transition-all"
+          aria-label="Next slide"
+        >
+          <ChevronRight size={24} />
+        </button>
+        
+        {/* Slide indicators */}
+        <div className="absolute bottom-4 left-0 right-0 flex justify-center z-30 gap-2">
+          {promotionalSlides.map((_, index) => (
+            <button
+              key={index}
+              onClick={() => setCurrentSlide(index)}
+              className={`w-3 h-3 rounded-full transition-all ${
+                index === currentSlide ? "bg-white scale-125" : "bg-white/50"
+              }`}
+              aria-label={`Go to slide ${index + 1}`}
+            />
+          ))}
         </div>
       </section>
 
@@ -79,7 +194,7 @@ export default function Home() {
           </div>
         </section>
 
-        {/* Categories - Improved */}
+        {/* Categories  */}
         <section className="py-16 relative overflow-hidden">
           <div className="absolute inset-0 bg-gradient-to-b from-secondary/50 to-secondary z-0"></div>
           <div className="container mx-auto px-4 relative z-10">

@@ -1,7 +1,3 @@
-// app/products/[id]/page.tsx
-
-
-
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { notFound } from "next/navigation";
@@ -297,20 +293,19 @@ export default async function ProductDetail({ params }: Props) {
           </TabsContent>
           
           <TabsContent value="reviews" className="pt-4">
-  <div className="bg-background rounded-xl overflow-hidden">
-    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-      {/* Rating Summary */}
-      <div className="bg-background p-8 flex flex-col items-center justify-center text-center">
-        <span className="text-5xl font-bold">{reviewData.average_rating ? product.average_rating : '0.0'}</span>
-        <div className="flex text-xl my-2">
-          {[1, 2, 3, 4, 5].map((star) => (
-            <span key={star} className={star <= Math.round(reviewData.average_rating || 0) ? "text-yellow-400" : "text-gray-300"}>
+            <div className="bg-background rounded-xl overflow-hidden">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          {/* Rating Summary */}
+              <div className="bg-background p-8 flex flex-col items-center justify-center text-center">
+               <span className="text-5xl font-bold">{reviewData.average_rating ? product.average_rating : '0.0'}</span>
+                <div className="flex text-xl my-2">
+                     {[1, 2, 3, 4, 5].map((star) => (
+                 <span key={star} className={star <= Math.round(reviewData.average_rating || 0) ? "text-yellow-400" : "text-gray-300"}>
               ★
-            </span>
-          ))}
-        </div>
-        <p className="text-sm text-gray-500">Based on {reviewData.count || 0} reviews</p>
-
+                </span>
+            ))}
+            </div>
+          <p className="text-sm text-gray-500">Based on {reviewData.count || 0} reviews</p>
         <ReviewForm productId={product.id} />
       </div>
       

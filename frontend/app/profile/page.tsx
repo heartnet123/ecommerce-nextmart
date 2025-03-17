@@ -5,28 +5,14 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { 
-  User, 
-  Package, 
-  Loader2, 
-  ShoppingBag, 
-  Clock, 
-  Calendar,
-  BadgeCheck,
-  ChevronRight,
-  Settings,
-  Mail,
-  CreditCard
-} from "lucide-react";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { User, Package, Loader2, ShoppingBag, Calendar, BadgeCheck, ChevronRight,  Mail,} from "lucide-react";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import axios from "axios";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
 
-// Update interface to match your actual API response
 interface CartItem {
   product: number;
   quantity: number;
@@ -181,7 +167,7 @@ export default function AccountPage() {
     }
   };
 
-  // Get total price safely
+  // Get total price 
   const getOrderTotal = (order: Order) => {
     if (typeof order.total_price === 'number') {
       return order.total_price;
@@ -192,12 +178,12 @@ export default function AccountPage() {
     return '0.00';
   };
 
-  // Get product name safely
+  // Get product name 
   const getProductName = (productId: number) => {
     return productDetails[productId]?.name || `Product #${productId}`;
   };
 
-  // Get order status styling
+  // Get order status
   const getStatusStyle = (status: string) => {
     switch(status) {
       case 'Delivered':
@@ -211,7 +197,7 @@ export default function AccountPage() {
     }
   };
 
-  // Get first letter of first and last name for avatar
+  // Get first letter of first and last name
   const getInitials = () => {
     const first = personalInfo.first_name?.charAt(0) || '';
     const last = personalInfo.last_name?.charAt(0) || '';
@@ -220,7 +206,9 @@ export default function AccountPage() {
 
   // Get recent orders (up to 3)
   const getRecentOrders = () => {
-    return orders.slice(0, 3);
+    return [...orders]
+      .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
+      .slice(0, 3);
   };
 
   return (
