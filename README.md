@@ -27,9 +27,9 @@ E-Commerce Project Subject Client-Side Development
 ## Setup
 ### Backend
 ```bash
-cd backend
 python3 -m venv venv
 venv/bin/activate
+cd backend
 pip install -r requirements.txt
 cd ecommerce_backend
 python manage.py migrate
