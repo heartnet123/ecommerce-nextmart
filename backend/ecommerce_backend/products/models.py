@@ -39,14 +39,12 @@ class Product(models.Model):
 class Review(models.Model):
     RATING_CHOICES = [(1, '1'), (2, '2'), (3, '3'), (4, '4'), (5, '5')]
     
-    # แก้ไขจาก User เป็น settings.AUTH_USER_MODEL
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL,  # ใช้ AUTH_USER_MODEL จาก settings
         on_delete=models.CASCADE, 
         related_name='reviews'
     )
     product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='reviews')
-    # ใช้การอ้างอิงแบบ lazy โดยใช้สตริง เพื่อแก้ circular import
     order = models.ForeignKey('orders.Order', on_delete=models.SET_NULL, null=True, related_name='reviews')
     rating = models.IntegerField(
         choices=RATING_CHOICES,

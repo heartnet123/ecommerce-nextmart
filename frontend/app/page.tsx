@@ -19,7 +19,7 @@ export default function Home() {
       id: 1,
       image: "https://wallpapers.com/images/hd/genshin-impact-game-poster-wlq3ykrxbaoadjow.jpg", 
       title: "Summer Gaming Sale",
-      description: "Up to 70% off on selected gaming gear",
+      description: "Up to 70% off on selected games",
       buttonText: "Shop Now",
       buttonLink: "/products/"
     },
